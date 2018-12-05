@@ -15,7 +15,21 @@ def convertMAC(number):
     else:
         print('Keine 12 Stellen, keine gültige MAC')
 
-with open('/home/markus/skripting/test.csv') as csv_file:
+def verifyIP(ip):
+    if re.match('',ip) is not None:
+        print(ip)
+        return(ip)
+    else:
+        print('Keine gültige IP')
+
+def generateDHCPEntry(mac, name, ip):
+    # Parse from Config
+    dhcpEntry = 'host ' + name + ' { hardware ethernet ' + mac + '; fixed-address ' + ip + '; }'
+    print(dhcpEntry)
+    return(dhcpEntry)
+
+
+with open('/home/markus/skripting/csvtodhcppxe/test.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=';')
     line_count = 0
     for row in csv_reader:
@@ -28,4 +42,5 @@ with open('/home/markus/skripting/test.csv') as csv_file:
     print(f'Processed {line_count} lines.')
     #verifyMAC('00:50:56:55:55:55')
     #verifyMAC('00:50')
-    convertMAC('005056555555')
+    mac = convertMAC('005056555555')
+    generateDHCPEntry(mac, 'test', '1.1.1.1')
