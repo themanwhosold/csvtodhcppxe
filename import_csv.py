@@ -1,10 +1,13 @@
 import re, csv
 
 def verifyMAC(mac):
-    if re.match('^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$',mac) is not None:
-        print(mac)
+    if re.match('^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$',mac) is not None:
+        return(mac)
+    if re.match('^([0-9A-F]{2}[-]){5}([0-9A-F]{2})$',mac) is not None:
+        mac = mac.replace('-',':')
+        return(mac)
     else:
-        print('Keine gültige MAC')
+        raise ValueError
 
 def convertMAC(number):
     if len(number)==12:
@@ -13,21 +16,20 @@ def convertMAC(number):
         print(mac)
         return(mac)
     else:
-        print('Keine 12 Stellen, keine gültige MAC')
+        raise ValueError
 
 def verifyIP(ip):
-    if re.match('',ip) is not None:
-        print(ip)
+    if re.match('^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}$',ip) is not None:
         return(ip)
     else:
-        print('Keine gültige IP')
+        raise ValueError
 
 def generateDHCPEntry(mac, name, ip):
-    # Parse from Config
-    dhcpEntry = 'host ' + name + ' { hardware ethernet ' + mac + '; fixed-address ' + ip + '; }'
-    print(dhcpEntry)
+    # Future: Parse from Config
+    dhcpEntry = 'host ' + name + ' { hardware ethernet ' + mac + '; fixed-address ' + ip + '; }\n'
     return(dhcpEntry)
 
+entry = ''
 
 with open('/home/markus/skripting/csvtodhcppxe/test.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=';')
@@ -37,10 +39,10 @@ with open('/home/markus/skripting/csvtodhcppxe/test.csv') as csv_file:
             print(f'Column names are {", ".join(row)}')
             line_count += 1
         else:
-            print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
+            mac = verifyMAC(row[4])
+            ip = verifyIP(row[1])
+            name = row[0]
+            entry += generateDHCPEntry(mac, name, ip)
             line_count += 1
+    print(entry)
     print(f'Processed {line_count} lines.')
-    #verifyMAC('00:50:56:55:55:55')
-    #verifyMAC('00:50')
-    mac = convertMAC('005056555555')
-    generateDHCPEntry(mac, 'test', '1.1.1.1')
