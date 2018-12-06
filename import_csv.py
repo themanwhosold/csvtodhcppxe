@@ -26,7 +26,7 @@ def verifyIP(ip):
 
 def generateDHCPEntry(mac, name, ip):
     # Future: Parse from Config
-    dhcpEntry = 'host ' + name + ' { hardware ethernet ' + mac + '; fixed-address ' + ip + '; }\n'
+    dhcpEntry = '\t\thost ' + name + ' { hardware ethernet ' + mac + '; fixed-address ' + ip + '; }\n'
     return(dhcpEntry)
 
 entry = ''
@@ -46,3 +46,6 @@ with open('/home/markus/skripting/csvtodhcppxe/test.csv') as csv_file:
             line_count += 1
     print(entry)
     print(f'Processed {line_count} lines.')
+    
+    with open('/home/markus/skripting/csvtodhcppxe/output','w') as outputFile:
+        outputFile.write(entry)
